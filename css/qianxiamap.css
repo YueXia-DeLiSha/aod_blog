@@ -72,7 +72,8 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 
 /* ===== 底部省份滚动卡片 ===== */
 .bottom-provinces {
-    flex: 1; background: white; padding: 15px;
+    flex: 1; background: #fff5f7; /* 浅浅粉背景 */ 
+    padding: 15px;
     overflow-x: auto; white-space: nowrap;
     border-top: 1px solid #ddd; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
     min-height: 120px;
