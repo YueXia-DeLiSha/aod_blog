@@ -3124,7 +3124,7 @@ body {
   background: var(--efu-background);
   color: var(--efu-fontcolor);
   font-size: 16px;
-  font-family: PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+  font-family: "LXGW WenKai Screen", "Noto Serif SC",serif;
   line-height: 2;
   -webkit-tap-highlight-color: transparent;
   margin: 0;
@@ -3239,7 +3239,7 @@ code,
 kbd,
 samp,
 pre {
-  font-family: "monospace", monospace;
+  font-family: "Courier Prime", "Maple Mono",monospace;
   font-size: 16px;
 }
 small {
@@ -9112,7 +9112,7 @@ span.tagsPageCount {
   padding: 0.5rem;
   text-align: center;
   font-size: 14px;
-  font-family: PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+  font-family: "LXGW WenKai Screen", "Noto Serif SC",serif;
 }
 @media screen and (max-width: 768px) {
   #body-wrap.error #error-wrap .error-content .error-info {
