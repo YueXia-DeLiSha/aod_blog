@@ -1,0 +1,114 @@
+/* ===== 全局重置 & 基础 ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+/* ===== 地图容器 ===== */
+.map-container { position: relative; width: 100%; flex: 0 0 58vh; background-color: #e9f0f5; border-bottom: 2px solid #ccc; }
+#map { width: 100%; height: 100%; }
+
+/* ===== 搜索框 ===== */
+.search-container {
+    position: absolute; top: 20px; left: 20px; z-index: 1000;
+    background: white; padding: 8px 15px; border-radius: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    display: flex; gap: 10px; align-items: center;
+    background-color: rgba(255,255,255,0.95); min-width: 300px;
+}
+.search-container input {
+    padding: 8px 12px; border: 1px solid #ddd; border-radius: 20px;
+    width: 220px; outline: none; font-size: 14px;
+}
+/* 修改搜索按钮背景色为 #ffedff */
+.search-container button {
+    background-color: #ffedff; color: white; border: none;
+    padding: 6px 15px; border-radius: 20px; cursor: pointer;
+    font-size: 14px; transition: background 0.2s;
+}
+.search-container button:hover { background-color: #0056b3; }
+
+/* ===== 搜索建议下拉 ===== */
+.suggestions {
+    position: absolute; top: 55px; left: 25px; background: white;
+    border: 1px solid #ccc; border-radius: 8px; max-height: 250px;
+    overflow-y: auto; width: 280px; z-index: 1001;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none;
+}
+.suggestions div { padding: 8px 12px; cursor: pointer; font-size: 14px; border-bottom: 1px solid #eee; }
+.suggestions div:hover { background-color: #f0f0f0; }
+
+/* ===== 返回按钮 ===== */
+.back-btn {
+    position: absolute; top: 20px; right: 20px; z-index: 1000;
+    background: #ffc107; color: #333; padding: 8px 16px;
+    border-radius: 30px; font-weight: bold; cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: none;
+    font-size: 14px;
+}
+
+/* ===== 省份侧边栏 ===== */
+.province-sidebar {
+    position: absolute; right: 20px; top: 80px; width: 160px;
+    background: rgba(255,255,255,0.96); border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    max-height: calc(100% - 100px); overflow-y: auto; z-index: 1000;
+    padding: 8px 0; font-size: 13px; backdrop-filter: blur(4px);
+    scrollbar-width: thin;
+}
+.province-sidebar::-webkit-scrollbar { width: 5px; }
+.province-sidebar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+.province-sidebar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
+.province-sidebar::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+.province-sidebar div {
+    padding: 8px 14px; cursor: pointer; transition: background 0.2s, transform 0.1s;
+    border-bottom: 1px solid #f0f0f0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.province-sidebar div:hover { background-color: #e9ecef; transform: translateX(2px); }
+.sidebar-letter {
+    background-color: #e2e6ea; font-weight: bold; padding: 8px 14px;
+    position: sticky; top: 0; background: #dee2e6; z-index: 10;
+    border-bottom: 1px solid #ccc; white-space: normal;
+}
+
+/* ===== 底部省份滚动卡片 ===== */
+.bottom-provinces {
+    flex: 1; background: white; padding: 15px;
+    overflow-x: auto; white-space: nowrap;
+    border-top: 1px solid #ddd; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    min-height: 120px;
+}
+/* 修改省份卡片背景色为 #ffedff */
+.province-card {
+    display: inline-block; width: 110px; margin: 0 8px;
+    background: #ffedff; border-radius: 12px; padding: 12px 8px;
+    text-align: center; cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); vertical-align: top;
+}
+.province-card:hover { background: #e9ecef; transform: translateY(-3px); }
+.province-name { font-weight: bold; font-size: 15px; margin-bottom: 5px; }
+.mall-count { font-size: 12px; color: #6c757d; }
+
+/* ===== 信息面板 ===== */
+.info-panel {
+    position: absolute; bottom: 20px; left: 20px;
+    background: rgba(0,0,0,0.7); color: white;
+    padding: 5px 12px; border-radius: 20px; font-size: 12px;
+    z-index: 1000; pointer-events: none;
+}
+
+/* ===== 底部页脚文字（内容由HTML提供） ===== */
+.footer-text {
+    text-align: center; font-size: 14px; color: #888;
+    padding: 12px 0; background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef; letter-spacing: 1px;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 768px) {
+    .province-sidebar { display: none; }
+    .search-container {
+        width: calc(100% - 40px); left: 20px; right: 20px; min-width: auto;
+    }
+    .search-container input { width: calc(100% - 80px); }
+    .footer-text { font-size: 12px; }
+}
