@@ -406,7 +406,8 @@
 
         // 初始化地图
         map = L.map('map').setView(config.mapCenter, config.mapZoom);
-        L.tileLayer(config.tileLayer).addTo(map);
+        L.tileLayer(config.tileLayer,{
+        attribution: '&copy; <a href="https://www.amap.com/">高德地图</a>'}).addTo(map);
 
         // 加载数据
         fetch(config.dataUrl)
