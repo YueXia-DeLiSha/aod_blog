@@ -80,6 +80,11 @@
         if (globalMarkers) map.removeLayer(globalMarkers);
         var markerGroup = L.layerGroup();
         allMallsList.forEach(function(mall) {
+            // 跳过缺失/非法坐标的数据，避免 L.marker 抛异常中断整个渲染
+            if (mall.lat == null || mall.lng == null || isNaN(mall.lat) || isNaN(mall.lng)) {
+                console.warn('map-core: 跳过无有效坐标的点', mall.name, mall.lat, mall.lng);
+                return;
+            }
             var popupContent = '<b>' + mall.name + '</b><br>📍 ' + mall.location +
                 (mall.screens !== '0' ? '<br>🖥 屏幕: ' + mall.screens + '块 | ' + mall.tech : '') +
                 (mall.lightTime ? '<br>⏰ 亮屏时间: ' + mall.lightTime : '') +
