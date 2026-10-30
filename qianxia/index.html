@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="referrer" content="no-referrer">
+    <title>千夏生贺 | 全国大屏应援地图</title>
+    <meta name="description" content="千夏生日全国大屏应援地图，查看各地商场大屏、物料点位置、投放时间等信息，为千夏送上生日祝福。">
+    <meta name="keywords" content="千夏,生贺,生日应援,大屏应援,物料点,全国地图">
+    <link rel="canonical" href="https://aodfans.com/qianxia" />
+    <link rel="icon" href="https://aodfans.com/img/favicon.ico" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="千夏生贺 | 全国大屏应援地图" />
+    <meta property="og:description" content="千夏生日全国大屏应援地图，查看各地商场大屏、物料点位置、投放时间等信息。" />
+    <meta property="og:image" content="https://aodfans.com/img/QianXiaShengHe.jpg" />
+    <meta property="og:url" content="https://aodfans.com/qianxia" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="zh_CN" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="千夏生贺 | 全国大屏应援地图" />
+    <meta name="twitter:description" content="千夏生日全国大屏应援地图，查看各地商场大屏、物料点位置、投放时间等信息。" />
+    <meta name="twitter:image" content="https://aodfans.com/img/QianXiaShengHe.jpg" />
+
+    <!-- JSON-LD 结构化数据 -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "千夏生贺 | 全国大屏应援地图",
+      "description": "千夏生日全国大屏应援地图，查看各地商场大屏、物料点位置、投放时间等信息。",
+      "url": "https://aodfans.com/qianxia",
+      "image": "https://aodfans.com/img/QianXiaShengHe.jpg",
+      "inLanguage": "zh-CN",
+      "about": {
+        "@type": "Event",
+        "name": "千夏生日应援",
+        "description": "千夏生日全国大屏应援活动"
+      }
+    }
+    </script>
+
+    <!-- ===== 地图框架依赖 ===== -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- 原版 map-theme.css（保留所有颜色） -->
+    <link rel="stylesheet" href="https://aodfans.com/css/qianxiamap.css" />
+    <script src="https://aodfans.com/js/map-core.js"></script>
+
+    <style>
+        /* 仅必要的覆盖：页面切换、布局修正，不改变任何颜色 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+        }
+
+        /* ===== 页面1：千夏生贺 ===== */
+        #page1 {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #0c0a09;
+            padding: 1.5rem 1.25rem;
+            transition: opacity 0.8s ease;
+        }
+        #page1.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .bg-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .bg-layer img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            filter: brightness(0.45) saturate(0.85) contrast(1.1);
+        }
+        .bg-layer::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 50%, rgba(12, 10, 9, 0.20) 0%, rgba(12, 10, 9, 0.70) 100%);
+            pointer-events: none;
+        }
+        .page1-content {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .brand {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 0.5rem 0 0.25rem 0;
+            flex-shrink: 0;
+            letter-spacing: 0.06em;
+        }
+        .brand-name {
+            font-size: clamp(1.1rem, 2.8vw, 1.8rem);
+            font-weight: 500;
+            color: #f5f0eb;
+            letter-spacing: 0.18em;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.50);
+            line-height: 1.3;
+        }
+        .brand-sub {
+            font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+            font-weight: 300;
+            color: rgba(245, 240, 235, 0.50);
+            letter-spacing: 0.35em;
+            margin-top: 0.1rem;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.40);
+        }
+        .hero-image-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1 1 auto;
+            min-height: 0;
+            width: 100%;
+            padding: 0.25rem 0;
+        }
+        .hero-image-wrapper img {
+            display: block;
+            max-width: 100%;
+            max-height: 78vh;
+            max-height: 78dvh;
+            width: auto;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.04);
+            background: transparent;
+            object-fit: contain;
+        }
+        .footer-note {
+            flex-shrink: 0;
+            padding: 0.4rem 0 0.1rem 0;
+            font-size: clamp(0.55rem, 1vw, 0.7rem);
+            font-weight: 300;
+            letter-spacing: 0.12em;
+            color: rgba(245, 240, 235, 0.30);
+            text-align: center;
+            text-shadow: 0 1px 8px rgba(0, 0, 0, 0.50);
+        }
+        .fade-in {
+            animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        .fade-in-delay-1 {
+            animation-delay: 0.15s;
+        }
+        .fade-in-delay-2 {
+            animation-delay: 0.30s;
+        }
+        .fade-in-delay-3 {
+            animation-delay: 0.45s;
+        }
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(14px) scale(0.98);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        @media (min-width: 768px) {
+            #page1 {
+                padding: 2.5rem 3rem;
+            }
+            .brand-name {
+                font-size: clamp(1.6rem, 3.2vw, 2.8rem);
+                letter-spacing: 0.22em;
+            }
+            .brand-sub {
+                font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+                letter-spacing: 0.40em;
+                margin-top: 0.2rem;
+            }
+            .hero-image-wrapper img {
+                max-height: 76vh;
+                max-height: 76dvh;
+                max-width: 90vw;
+                border-radius: 16px;
+                box-shadow: 0 12px 56px rgba(0, 0, 0, 0.60), 0 0 0 1px rgba(255, 255, 255, 0.06);
+            }
+            .footer-note {
+                font-size: clamp(0.6rem, 0.9vw, 0.75rem);
+            }
+        }
+
+        /* ===== 页面2：地图框架（完全使用 map-theme.css 样式） ===== */
+        #page2 {
+            position: fixed;
+            inset: 0;
+            z-index: 5;
+            display: none;  /* 初始隐藏，3秒后显示 */
+            background: #f0f2f5;
+            flex-direction: column;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+        }
+        /* 恢复 map-theme.css 的 body 样式到 #page2 */
+        #page2 .map-container {
+            flex: 0 0 58vh;
+            border-bottom: 2px solid #ccc;
+        }
+        #page2 .bottom-provinces {
+            flex: 1;
+            min-height: 120px;
+        }
+        /* 确保侧边栏、搜索框等按照原样式正常显示 */
+        #page2 .province-sidebar {
+            /* 继承 map-theme.css 样式，无需覆盖 */;
+        }
+        /* 信息面板文字可见（原为白色，背景黑透明，保留） */
+        #page2 .info-panel {
+            color: white !important;
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 地图弹窗保持默认 */
+        .leaflet-popup-content {
+            color: #222 !important;
+            text-shadow: none !important;
+        }
+
+        /* 底部页脚文字颜色保留原样 */
+        .footer-text {
+            color: #888 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 页面1：千夏生贺 ===== -->
+    <div id="page1">
+        <div class="bg-layer">
+            <img src="https://aodfans.com/img/BeiJingTu.jpg" alt="" aria-hidden="true" loading="lazy" />
+        </div>
+        <div class="page1-content">
+            <div class="brand fade-in fade-in-delay-1">
+                <h1 class="brand-name">千夏生贺</h1>
+                <div class="brand-sub">✦  H A P P Y  B I R T H D A Y  ✦</div>
+            </div>
+            <div class="hero-image-wrapper fade-in fade-in-delay-2">
+                <img src="https://aodfans.com/img/QianXiaShengHe.jpg" alt="千夏生贺 插画" decoding="async" />
+            </div>
+            <div class="footer-note fade-in fade-in-delay-3">
+                © 2026 · 千夏生贺
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 页面2：地图框架（完全沿用原有 HTML 结构） ===== -->
+    <div id="page2">
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="search-container">
+                <img src="https://aodfans.com/img/favicon.ico" alt="网站图标" style="width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;">
+                <input type="text" id="searchInput" placeholder="搜索省份、商场或物料点..." autocomplete="off">
+                <button id="searchBtn">🔍 搜索</button>
+            </div>
+            <div id="suggestions" class="suggestions"></div>
+            <div id="backButton" class="back-btn">← 返回全国地图</div>
+            <div class="province-sidebar" id="provinceSidebar"></div>
+            <div class="info-panel" id="infoPanel">🏬 全国商场 + 物料领取点 已加载 | 🔴红色为物料点</div>
+        </div>
+        <div class="bottom-provinces" id="bottomProvinceList"></div>
+        <div class="footer-text">[羽]你妄想，万[千]可[爱] | 地图网页by妄想天使后援会</div>
+    </div>
+
+    <script>
+        (function() {
+            // --- 1. 页面加载后立即启动地图引擎（在后台不可见容器中预加载）---
+            var page2 = document.getElementById('page2');
+            
+            // 立即调用 MapApp.start —— 所有 fetch、解析、绘制都在此时完成
+            // 数据请求依然深埋在 map-core.js 内部，外部无法窃取
+            MapApp.start({
+                dataUrl: 'https://aodfans.com/json/qianxiadata.json'
+            });
+
+            // --- 2. 3秒后只做 UI 切换，显示已渲染好的地图 ---
+            setTimeout(function() {
+                var page1 = document.getElementById('page1');
+                page1.classList.add('hidden');
+
+                // 显示地图容器（此时内容已准备就绪）
+                page2.style.display = 'flex';
+
+                // 关键修复：Leaflet 在隐藏容器中初始化会出现尺寸偏移，
+                // 通过触发 resize 让地图重新计算可见区域（官方推荐做法）
+                requestAnimationFrame(function() {
+                    window.dispatchEvent(new Event('resize'));
+                });
+                // 部分浏览器需要二次兜底
+                setTimeout(function() {
+                    window.dispatchEvent(new Event('resize'));
+                }, 100);
+
+            }, 3000);
+        })();
+    </script>
+</body>
+</html>

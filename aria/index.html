@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="referrer" content="no-referrer">
+    <title>Aria · 全国商场地图</title>
+    <link rel="icon" type="image/webp" href="https://aodfans.com/img/favicon.webp">
+
+    <!-- ===== 框架依赖 ===== -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <!-- ===== 框架样式 & 核心引擎 ===== -->
+    <link rel="stylesheet" href="https://aodfans.com/css/map-theme.css" />
+    <script src="https://aodfans.com/js/map-core.js"></script>
+</head>
+<body>
+
+    <!-- ===== 页面结构（固定，由引擎操作） ===== -->
+    <div class="map-container">
+        <div id="map"></div>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="搜索省份、商场或物料点..." autocomplete="off">
+            <button id="searchBtn">🔍 搜索</button>
+        </div>
+        <div id="suggestions" class="suggestions"></div>
+        <div id="backButton" class="back-btn">← 返回全国地图</div>
+        <div class="province-sidebar" id="provinceSidebar"></div>
+        <div class="info-panel" id="infoPanel">🏬 全国商场 + 物料领取点 已加载 | 🔴红色为物料点</div>
+    </div>
+    <div class="bottom-provinces" id="bottomProvinceList"></div>
+    <div class="footer-text">[羽]你妄想，万[千]可[爱]</div>
+
+    <script>
+        // ===== 唯一业务代码：配置并启动 =====
+        MapApp.start({
+            dataUrl: 'https://aodfans.com/json/ariadata.json'
+            // 可选覆盖：mapCenter, mapZoom, tileLayer, geoBaseUrl, markerColor, redMarkerColor
+        });
+    </script>
+</body>
+</html>
